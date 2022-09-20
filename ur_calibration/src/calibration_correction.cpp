@@ -2,6 +2,7 @@
 
 // -- BEGIN LICENSE BLOCK ----------------------------------------------
 // Copyright 2019 FZI Forschungszentrum Informatik
+// Created on behalf of Universal Robots A/S
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -33,6 +34,8 @@
 #include <ur_client_library/comm/stream.h>
 #include <ur_client_library/primary/package_header.h>
 #include <ur_client_library/primary/primary_parser.h>
+
+#include <ur_robot_driver/urcl_log_handler.h>
 
 #include <sensor_msgs/JointState.h>
 #include <tf/transform_listener.h>
@@ -161,6 +164,8 @@ int main(int argc, char* argv[])
 {
   ros::init(argc, argv, "ur_calibration");
   ros::NodeHandle nh("~");
+
+  ur_driver::registerUrclLogHandler();
 
   try
   {

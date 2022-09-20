@@ -2,6 +2,7 @@
 
 // -- BEGIN LICENSE BLOCK ----------------------------------------------
 // Copyright 2019 FZI Forschungszentrum Informatik
+// Created on behalf of Universal Robots A/S
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,6 +30,7 @@
 
 #include <csignal>
 #include <ur_robot_driver/hardware_interface.h>
+#include <ur_robot_driver/urcl_log_handler.h>
 
 std::unique_ptr<ur_driver::HardwareInterface> g_hw_interface;
 
@@ -55,6 +57,8 @@ int main(int argc, char** argv)
 
   // register signal SIGINT and signal handler
   signal(SIGINT, signalHandler);
+
+  ur_driver::registerUrclLogHandler();
 
   std::ifstream realtime_file("/sys/kernel/realtime", std::ios::in);
   bool has_realtime = false;

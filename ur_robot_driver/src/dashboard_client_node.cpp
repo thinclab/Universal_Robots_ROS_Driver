@@ -2,6 +2,7 @@
 
 // -- BEGIN LICENSE BLOCK ----------------------------------------------
 // Copyright 2019 FZI Forschungszentrum Informatik
+// Created on behalf of Universal Robots A/S
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,11 +29,15 @@
 #include <ros/ros.h>
 #include <ur_robot_driver/dashboard_client_ros.h>
 
+#include <ur_robot_driver/urcl_log_handler.h>
+
 int main(int argc, char** argv)
 {
   // Set up ROS.
   ros::init(argc, argv, "dashboard_client");
   ros::NodeHandle priv_nh("~");
+
+  ur_driver::registerUrclLogHandler();
 
   // The IP address under which the robot is reachable.
   std::string robot_ip = priv_nh.param<std::string>("robot_ip", "192.168.56.101");

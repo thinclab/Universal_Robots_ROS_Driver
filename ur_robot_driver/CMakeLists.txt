@@ -18,15 +18,19 @@ find_package(catkin REQUIRED
     industrial_robot_status_interface
     pluginlib
     roscpp
+    scaled_joint_trajectory_controller
     sensor_msgs
+    speed_scaling_interface
+    speed_scaling_state_controller
     std_srvs
     tf
     tf2_geometry_msgs
     tf2_msgs
     trajectory_msgs
-    ur_controllers
     ur_dashboard_msgs
     ur_msgs
+    pass_through_controllers
+    kdl_parser
 )
 find_package(Boost REQUIRED)
 find_package(ur_client_library REQUIRED)
@@ -36,23 +40,28 @@ catkin_package(
     include
   LIBRARIES
     ur_robot_driver_plugin
+    urcl_log_handler
   CATKIN_DEPENDS
     actionlib
-    control_msgs
     controller_manager
+    control_msgs
     geometry_msgs
     hardware_interface
+    kdl_parser
+    pass_through_controllers
     pluginlib
     roscpp
+    scaled_joint_trajectory_controller
     sensor_msgs
+    speed_scaling_interface
+    speed_scaling_state_controller
+    std_srvs
     tf
     tf2_geometry_msgs
     tf2_msgs
     trajectory_msgs
-    ur_controllers
     ur_dashboard_msgs
     ur_msgs
-    std_srvs
   DEPENDS
     Boost
     ur_client_library
@@ -88,19 +97,24 @@ add_library(ur_robot_driver_plugin
 target_link_libraries(ur_robot_driver_plugin ur_client_library::urcl ${catkin_LIBRARIES})
 add_dependencies(ur_robot_driver_plugin ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
+add_library(urcl_log_handler
+  src/urcl_log_handler.cpp
+)
+target_link_libraries(urcl_log_handler ${catkin_LIBRARIES} ur_client_library::urcl)
+
 add_executable(ur_robot_driver_node
   src/dashboard_client_ros.cpp
   src/hardware_interface.cpp
   src/hardware_interface_node.cpp
 )
-target_link_libraries(ur_robot_driver_node ${catkin_LIBRARIES} ur_client_library::urcl)
+target_link_libraries(ur_robot_driver_node ${catkin_LIBRARIES} ur_client_library::urcl urcl_log_handler)
 add_dependencies(ur_robot_driver_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 add_executable(dashboard_client
   src/dashboard_client_ros.cpp
   src/dashboard_client_node.cpp
 )
-target_link_libraries(dashboard_client ${catkin_LIBRARIES} ur_client_library::urcl)
+target_link_libraries(dashboard_client ${catkin_LIBRARIES} ur_client_library::urcl urcl_log_handler)
 add_dependencies(dashboard_client ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 add_executable(robot_state_helper
@@ -117,13 +131,13 @@ if(CATKIN_ENABLE_TESTING)
 endif()
 
 
-install(TARGETS ur_robot_driver_plugin ur_robot_driver_node robot_state_helper dashboard_client
+install(TARGETS ur_robot_driver_plugin urcl_log_handler ur_robot_driver_node robot_state_helper dashboard_client
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
-catkin_install_python(PROGRAMS scripts/tool_communication
+catkin_install_python(PROGRAMS scripts/tool_communication scripts/test_move
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
 install(DIRECTORY config launch resources
